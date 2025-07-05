@@ -1,0 +1,4 @@
+pandas==2.2.3
+psycopg2-binary==2.9.10
+clickhouse-connect==0.8.18
+python-dotenv==1.1.1
