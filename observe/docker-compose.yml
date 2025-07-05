@@ -1,0 +1,92 @@
+services:
+  init_names:
+    image: alpine:latest
+    container_name: init_names
+    command: sh -c "echo 'SERVER_IP=$(hostname -i)' > .env" #new fil with gitignore
+    volumes:
+      - .:/app
+    working_dir: /app
+    restart: "no"
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' #new file use
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_data:/prometheus
+    ports:
+      - 9090:9090
+    depends_on:
+      - init_names
+
+#
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - ./node-exporter/proc:/host/proc:ro
+      - ./node-exporter/sys:/host/sys:ro
+      - ./node-exporter:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.rootfs=/rootfs
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    ports:
+      - 9100:9100
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/grafana_data:/var/lib/grafana
+      - ./grafana:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+  influxdb:
+      image: influxdb:2.7.6-alpine
+      container_name: influxdb2
+      ports:
+        - 8086:8086
+      # extra_hosts:
+      #   - "dockerlab:host-gateway"
+      volumes:
+        - influxdb2_data:/var/lib/influxdb2
+        - ./influxdb2/config:/etc/influxdb2
+        - ./influxdb2/scripts:/docker-entrypoint-initdb.d
+  # telegraf:
+  #   image: telegraf:latest
+  #   pid: "host"
+  #   container_name: telegraf
+  #   user: telegraf:999
+  #   restart: always
+  #   entrypoint: /bin/bash -c "/entrypoint.sh telegraf"
+  #   extra_hosts:
+  #     - "dockerlab:host-gateway"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+  #     - /:/hostfs:ro
+  #   environment:
+  #     - HOST_ETC=/hostfs/etc
+  #     - HOST_PROC=/hostfs/proc
+  #     - HOST_SYS=/hostfs/sys
+  #     - HOST_VAR=/hostfs/var
+  #     - HOST_RUN=/hostfs/run
+  #     - HOST_MOUNT_PREFIX=/hostfs
+volumes:
+  prometheus_data:
+  grafana_data:
+  influxdb2_data:
+
+# networks:
+#   default:
+#     name: prometheus-grafana
+#     driver: bridge
+
+  
