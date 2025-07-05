@@ -1,7 +1,7 @@
 services:
   postgres:
-    image: postgres:17
-    container_name: postgres
+    image: postgres:17.5
+    container_name: postgres-edu
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -13,10 +13,14 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:25.6.2.5
-    container_name: clickhouse
+    container_name: clickhouse-edu
     ports:
       - "8123:8123"  # HTTP порт для ClickHouse
       - "9000:9000"  # Порт для взаимодействия с базой данных
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: yourpassword
     volumes:
       - ./clickhouse_data:/var/lib/clickhouse
       - ./clickhouse_log:/var/log/clickhouse-server
