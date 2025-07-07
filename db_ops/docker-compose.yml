@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_DB: dbpg
     ports:
       - "5432:5432"
     volumes:
@@ -18,9 +18,9 @@ services:
       - "8123:8123"  # HTTP порт для ClickHouse
       - "9000:9000"  # Порт для взаимодействия с базой данных
     environment:
-      CLICKHOUSE_DB: default
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: yourpassword
+      CLICKHOUSE_DB: dbch
+      CLICKHOUSE_USER: user
+      CLICKHOUSE_PASSWORD: password
     volumes:
       - ./clickhouse_data:/var/lib/clickhouse
       - ./clickhouse_log:/var/log/clickhouse-server
