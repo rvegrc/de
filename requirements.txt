@@ -4,3 +4,4 @@ clickhouse-connect==0.8.18
 python-dotenv==1.1.1
 matplotlib==3.10.3
 seaborn==0.13.2
+pyarrow==20.0.0
