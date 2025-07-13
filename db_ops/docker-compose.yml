@@ -15,8 +15,8 @@ services:
     image: clickhouse/clickhouse-server:25.6.2.5
     container_name: clickhouse-edu
     ports:
-      - "8123:8123"  # HTTP порт для ClickHouse
-      - "9000:9000"  # Порт для взаимодействия с базой данных
+      - "28123:8123"  # HTTP порт для ClickHouse
+      - "29000:9000"  # Порт для взаимодействия с базой данных
     environment:
       CLICKHOUSE_DB: dbch
       CLICKHOUSE_USER: user
