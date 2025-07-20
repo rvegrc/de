@@ -81,3 +81,32 @@ RENAME TABLE tmp.points_merged_with_id TO tmp.points_merged;
 select distinct st_name, country_name
 from tmp.points_merged
 where country_name  ilike 'Кит%';
+
+CREATE TABLE tmp.ms_mod_val
+(
+    id UInt32,
+    `measure` UInt8,
+    `service` UInt32,
+    `model_run_id` String,
+    `value` Float32,
+    `mape` Float32,
+    `flag` UInt8,
+    `date` DateTime64 (6, 'UTC')    -- other columns are inherited from the SELECT *
+)
+ENGINE = MergeTree
+ORDER BY id
+AS
+SELECT
+    rowNumberInAllBlocks() AS id,
+    *
+FROM dev_transerv_cont.ms_mod_val;
+
+
+-- show table structure
+DESCRIBE TABLE dev_transerv_cont.ms_mod_val;
+
+-- second variant of describe table
+SELECT name, type
+FROM system.columns
+WHERE database = 'dev_transerv_cont'
+  AND table = 'ms_mod_val';
